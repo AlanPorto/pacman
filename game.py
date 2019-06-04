@@ -2,6 +2,8 @@ import random
 import os.path
 import pygame
 
+print("Test git")
+
 # Constants
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
