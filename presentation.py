@@ -78,7 +78,6 @@ def DrawnLevel():
                 yPos = row * mHeight
                 pygame.draw.rect(mScreen, mBlue, [xPos, yPos, mWidth, mHeight])
     
-
 def DrawnCharacters(simState):
 
     for i in range(len(simState)):
