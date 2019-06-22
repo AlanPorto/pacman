@@ -1,4 +1,5 @@
 import math
+import random
 
 class Character:
 
@@ -10,19 +11,10 @@ class Character:
     row = None
     col = None
 
-    def __init__(self, idNumber, cellPosition, worldPosition):
-        self.ID = idNumber
-
-        self.row = cellPosition[0]
-        self.col = cellPosition[1]
-
-        self.posX = worldPosition[0]
-        self.posY = worldPosition[1]
-
-        if (idNumber == 0):
-            self.name = "pacman"
-        else:
-            self.name = "ghost0" + str(self.ID)
+    targetRow = None
+    targetCol = None
+    targetX = None
+    targetY = None
 
     def GetCellIndexForPosition(self, maze, posX, posY):
 
@@ -42,6 +34,52 @@ class Character:
             colIndex -= 1 
 
         return [rowIndex, colIndex]
+
+    def GetPositionForIndex(self, row, col):
+
+        cellWidth = 16
+        cellHeight = 16
+
+        posX = col * cellWidth
+        posY = row * cellHeight
+
+        return [posX, posY]
+
+    def SetRndTarget(self, maze):
+
+        maxRow = maze.shape[0] - 1
+        maxCol = maze.shape[1] - 1
+
+        self.targetRow = None
+        self.targetCol = None
+
+        while (True):
+            self.targetRow = random.randint(0, maxRow)
+            self.targetCol = random.randint(0, maxCol)
+
+            if (maze[self.targetRow][self.targetCol] == '0'):
+                worldPos = self.GetPositionForIndex(self.targetRow, self.targetCol)
+                self.targetX = worldPos[0]
+                self.targetY = worldPos[1]
+                break
+
+    def __init__(self, idNumber, cellPosition, worldPosition, maze):
+        self.ID = idNumber
+
+        self.row = cellPosition[0]
+        self.col = cellPosition[1]
+
+        self.posX = worldPosition[0]
+        self.posY = worldPosition[1]
+
+        if (idNumber == 0):
+            self.name = "pacman"
+        else:
+            self.name = "ghost0" + str(self.ID)
+
+        self.SetRndTarget(maze)
+
+
 
     def Update(self, maze):
         
@@ -71,5 +109,8 @@ class Character:
 
         self.row = rowCandidate
         self.col = colCandidate
+
+        if (self.row == self.targetRow and self.col == self.targetCol):
+            self.SetRndTarget(maze)
 
 

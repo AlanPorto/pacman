@@ -21,12 +21,11 @@ def Init(mazeArray, cellWidth, cellHeight):
     posY = cellPosition[0] * mHeight
 
     worldPosition = [posX, posY]
-
-    for i in range(1):
-        char = character.Character(i, cellPosition, worldPosition)
-        global mCharacters
-        mCharacters.append(char)
-
+    
+    characterID = 2
+    char = character.Character(characterID, cellPosition, worldPosition, mMaze)
+    global mCharacters
+    mCharacters.append(char)
 
 def Update():
 

@@ -11,9 +11,11 @@ mPacmanID = 0
 mcGhostID = 1
 
 # Colors
-mBlack = (0, 0, 0)
-mWhite = (255, 255, 255)
-mBlue = (0, 0, 255)
+mBlack = [0, 0, 0]
+mWhite = [255, 255, 255]
+mBlue = [0, 0, 255]
+mYellow = [255, 255, 0]
+mRed = [255, 0, 0]
 
 # Variables
 mWidth = None
@@ -58,9 +60,9 @@ def Init(mazeArray, cellWidth, cellHeight):
 
 def GetColorForID(idNumber):
     if (idNumber == 0):
-        return [255, 255, 0] # Yellow
+        return mYellow
     else:
-        return [255, 0, 0] # Red
+        return mRed
 
 def DrawnLevel():
 
@@ -85,8 +87,14 @@ def DrawnCharacters(simState):
         color = GetColorForID(char.ID)
         xPos = char.posX
         yPos = char.posY
+
+        targetColor = mYellow
+        targetX = char.targetX
+        targetY = char.targetY
+
         global mScreen, mWidth, mHeight
         pygame.draw.rect(mScreen, color, [xPos, yPos, mWidth, mHeight])
+        pygame.draw.rect(mScreen, targetColor, [targetX, targetY, mWidth, mHeight])
 
 
 def Update(simState):
