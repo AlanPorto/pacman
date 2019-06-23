@@ -4,7 +4,6 @@ import presentation
 import sys
 from numpy import loadtxt
 
-
 def InitGame():
 
     # Initialize pygame
