@@ -58,6 +58,7 @@ class Character:
         self.targetCol = None
 
         while (True):
+
             self.targetRow = random.randint(0, maxRow)
             self.targetCol = random.randint(0, maxCol)
 
@@ -106,19 +107,36 @@ class Character:
 
     def UpdateMoveDirection(self, currentCell):
 
+        kMaxSpeed = 0.8
         speedX = 0
         speedY = 0
 
         if (self.nextMoveCell[0] < currentCell[0]): # Go up
-            speedY = -0.2
+            speedY = -kMaxSpeed
         elif (self.nextMoveCell[0] > currentCell[0]): # Go down
-            speedY = 0.2
-        elif (self.nextMoveCell[1] < currentCell[1]): # Go left
-            speedX = -0.2
-        elif (self.nextMoveCell[0] > currentCell[0]): # Go right
-            speedX = 0.2
-
+            speedY = kMaxSpeed
+        
+        if (self.nextMoveCell[1] < currentCell[1]): # Go left
+            speedX = -kMaxSpeed
+        elif (self.nextMoveCell[1] > currentCell[1]): # Go right
+            speedX = kMaxSpeed
+        
         self.speed = [speedX, speedY]
+
+    def GetCollision(self, posX, posY, row, col, maze):
+
+        botRightX = posX + 15
+        botRightY = posY + 15
+        botRightCells = self.GetCellIndexForPosition(maze, botRightX, botRightY)
+        botRightRow = botRightCells[0]
+        botRightCol = botRightCells[1]
+
+        topLeftCollision = (maze[row][col] != '0')
+        topRightCollision = (maze[row][botRightCol] != '0')
+        botLeftCollision = (maze[botRightRow][col] != '0')
+        botRightCollision = (maze[botRightRow][botRightCol] != '0')
+
+        return [topLeftCollision,topRightCollision, botLeftCollision, botRightCollision]
 
     def Update(self, maze):
         
@@ -133,18 +151,44 @@ class Character:
         colCandidate = cellPositions[1]
 
         # Collision code
-        #botRightX = candidateX + 15
-        #botRightY = candidateY + 15
-        #botRightCells = self.GetCellIndexForPosition(maze, botRightX, botRightY)
-        #botRightRow = botRightCells[0]
-        #botRightCol = botRightCells[1]
+        while (True):
 
-        #candidateCollision = (maze[rowCandidate][colCandidate] != '0')
-        #botRightCollision = (maze[botRightRow][botRightCol] != '0')
+            collisions = self.GetCollision(candidateX, candidateY, rowCandidate, colCandidate, maze)
+            topLeftCollision = collisions[0]
+            topRightCollision = collisions[1]
+            botLeftCollision = collisions[2]
+            botRightCollision = collisions[3]
 
-        #if (candidateCollision == True or botRightCollision == True):
-            #self.speed[0] *= -1
-            #self.speed[1] *= -1
+            if (topLeftCollision == False) and (topRightCollision == False) and (botLeftCollision == False) and (botRightCollision == False):
+                break
+
+            collisionMovement = 0.08
+
+            if (topLeftCollision == True and botLeftCollision == True):
+                candidateX = candidateX + collisionMovement
+            elif (topRightCollision == True and botRightCollision == True):
+                candidateX = candidateX - collisionMovement
+            elif (topLeftCollision == True and topRightCollision == True):
+                candidateY = candidateY + collisionMovement
+            elif (botLeftCollision == True and botRightCollision == True):
+                candidateY = candidateY - collisionMovement
+            elif (topLeftCollision == True):
+                candidateX = candidateX + collisionMovement
+                candidateY = candidateY + collisionMovement
+            elif (topRightCollision == True):
+                candidateX = candidateX - collisionMovement
+                candidateY = candidateY + collisionMovement
+            elif (botLeftCollision == True):
+                candidateX = candidateX + collisionMovement
+                candidateY = candidateY - collisionMovement
+            elif (botRightCollision == True):
+                candidateX = candidateX - collisionMovement
+                candidateY = candidateY - collisionMovement
+
+            cellPositions = self.GetCellIndexForPosition(maze, candidateX, candidateY)
+            rowCandidate = cellPositions[0]
+            colCandidate = cellPositions[1]
+        
 
         self.posX = candidateX
         self.posY = candidateY
@@ -153,7 +197,6 @@ class Character:
         self.col = colCandidate
 
         if (self.row == self.targetRow and self.col == self.targetCol):
-            print("Arrived")
             self.GenerateNewTarget(maze)
 
 

@@ -27,7 +27,7 @@ def GetSqrDistance(fromCell, toCell):
 
 # Code based on https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2
 def GetPath(startCell, endCell, maze):
-    
+
     startNode = Node(startCell)
     endNode = Node(endCell)
 
@@ -35,6 +35,8 @@ def GetPath(startCell, endCell, maze):
     openNodes.append(startNode)
 
     closedCells = []
+
+    bestNode = None
 
     while len(openNodes) > 0:
 
@@ -48,6 +50,9 @@ def GetPath(startCell, endCell, maze):
 
         openNodes.pop(currentIndex)
         closedCells.append(currentNode.Cell)
+
+        rowTest = currentNode.Cell[0]
+        colTest = currentNode.Cell[1]
 
         if (currentNode.Cell == endNode.Cell):
             path = []
@@ -72,9 +77,15 @@ def GetPath(startCell, endCell, maze):
 
         for childNode in childrenNodes:
             
+            skipChild = False
+
             for closedCell in closedCells:
                 if (childNode.Cell == closedCell):
-                    continue # Go to the next childNode. It is continuing the outter loop
+                    skipChild = True
+                    break # Go to the next childNode. It is continuing the outter loop
+
+            if (skipChild == True):
+                continue
 
             childNode.CostG = currentNode.CostG + 1
             childNode.CostH = GetSqrDistance(childNode.Cell, endNode.Cell)
@@ -82,9 +93,11 @@ def GetPath(startCell, endCell, maze):
 
             for openNode in openNodes:
                 if (childNode.Cell == openNode.Cell) and (childNode.CostG > openNode.CostG):
-                    continue # Skip this child node
+                    skipChild = True
+                    break # Skip this child node
 
-            openNodes.append(childNode)
+            if (skipChild == False):
+                openNodes.append(childNode)
 
 
     print("Failed to find a path!")
